@@ -28,7 +28,7 @@ public class TodoGroupListAdapter<T extends TodoGroup> extends ArrayAdapter<T> {
 	    TextView subtext = (TextView) view.findViewById(R.id.subtext);
 	    
 	    titletext.setText(group.getGroupName());
-	    subtext.setText(String.format("%d items, %d checked", group.getItems().size(), 0));
+	    subtext.setText(String.format("%d items, %d checked", group.getItemCount(), group.getCheckedItemCount()));
 	    
 	    return view;
 	}

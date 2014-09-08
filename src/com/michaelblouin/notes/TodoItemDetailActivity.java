@@ -1,15 +1,11 @@
 package com.michaelblouin.notes;
 
-import java.util.Map;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
-
 import com.michaelblouin.todo.TodoGroup;
-
 
 /**
  * An activity representing a single TodoItem detail screen. This

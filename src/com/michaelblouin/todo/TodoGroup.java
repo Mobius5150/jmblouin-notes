@@ -33,6 +33,30 @@ public class TodoGroup implements Serializable {
 		this.items = items;
 	}
 	
+	public Integer getItemCount() {
+		return items.size();
+	}
+	
+	public Integer getCheckedItemCount() {
+		Integer count = 0;
+		
+		for (TodoItem item: items) {
+			if (item.isChecked()) {
+				++count;
+			}
+		}
+		
+		return count;
+	}
+	
+	public void addItemToGroup(TodoItem todoItem) {
+		if (null == todoItem) {
+			throw new IllegalArgumentException("New TodoItem musn't be null");
+		}
+		
+		this.items.add(todoItem);
+	}
+	
 	public Boolean moveItemToGroup(TodoItem item, TodoGroup group) {
 		if (!getItems().contains(item) || !getItems().remove(item)) {
 			return false;

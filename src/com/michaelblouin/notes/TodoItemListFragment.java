@@ -38,7 +38,7 @@ public class TodoItemListFragment extends ListFragment {
 		}});
 		
 		todoGroups.get("Archive").getItems().addAll(new ArrayList<TodoItem>() {{
-			add(new TodoItem(1, "Hi World", false));
+			add(new TodoItem(4, "Hi World", false));
 		}});
     }
 
