@@ -1,5 +1,7 @@
 package com.michaelblouin.notes;
 
+import java.util.Map;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,7 +20,7 @@ import com.michaelblouin.todo.TodoGroup;
  * This activity is mostly just a 'shell' activity containing nothing
  * more than a {@link TodoItemDetailFragment}.
  */
-public class TodoItemDetailActivity extends Activity {
+public class TodoItemDetailActivity extends Activity implements TodoItemDetailFragment.Callbacks {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,7 @@ public class TodoItemDetailActivity extends Activity {
             
             TodoItemDetailFragment fragment = new TodoItemDetailFragment();
             fragment.setArguments(arguments);
+            fragment.onAttach(this);
             
             getFragmentManager()
             	.beginTransaction()
@@ -80,5 +83,44 @@ public class TodoItemDetailActivity extends Activity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+    
+    /**
+     * Callback method from {@link TodoItemListFragment.Callbacks}
+     * indicating that the item with the given ID was selected.
+     */
+    @Override
+    public void onItemSelected(String id) {
+//    	Map<String, TodoGroup> todoGroups =
+//			((TodoItemListFragment) getFragmentManager()
+//				.findFragmentById(R.id.todoitem_list))
+//            		.getTodoGroups();
+//    	
+//    	if (!todoGroups.containsKey(id)) {
+//    		throw new IllegalStateException("The given TodoGroup was not found");
+//    	}
+//    	
+//    	TodoGroup selectedGroup = todoGroups.get(id);
+//    	
+//        if (mTwoPane) {
+//            // In two-pane mode, show the detail view in this activity by
+//            // adding or replacing the detail fragment using a
+//            // fragment transaction.
+//            Bundle arguments = new Bundle();
+//            arguments.putSerializable(TodoItemDetailFragment.ARG_ITEM_GROUP, selectedGroup);
+//            
+//            TodoItemDetailFragment fragment = new TodoItemDetailFragment();
+//            fragment.setArguments(arguments);
+//            getFragmentManager()
+//            	.beginTransaction()
+//                .replace(R.id.todoitem_detail_container, fragment)
+//                .commit();
+//        } else {
+//            // In single-pane mode, simply start the detail activity
+//            // for the selected item ID.
+//            Intent detailIntent = new Intent(this, TodoItemDetailActivity.class);
+//            detailIntent.putExtra(TodoItemDetailFragment.ARG_ITEM_GROUP, selectedGroup);
+//            startActivity(detailIntent);
+//        }
     }
 }

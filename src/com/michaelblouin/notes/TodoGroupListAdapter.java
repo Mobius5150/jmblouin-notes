@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
 import com.michaelblouin.todo.TodoGroup;
 
 public class TodoGroupListAdapter<T extends TodoGroup> extends ArrayAdapter<T> {

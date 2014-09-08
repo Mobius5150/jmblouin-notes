@@ -1,9 +1,10 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/todoitem_detail"
-    style="?android:attr/textAppearanceLarge"
+    android:name="com.michaelblouin.notes.TodoItemDetailFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
-    android:textIsSelectable="true"
-    tools:context="com.michaelblouin.notes.TodoItemDetailFragment" />
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    tools:context="com.michaelblouin.notes.TodoItemDetailActivity"
+    tools:layout="@android:layout/list_content" />

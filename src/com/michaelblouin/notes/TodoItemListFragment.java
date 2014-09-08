@@ -30,6 +30,16 @@ public class TodoItemListFragment extends ListFragment {
 		todoGroups = new HashMap<String, TodoGroup>();
 		todoGroups.put("Todo Items", new TodoGroup("Todo Items", new ArrayList<TodoItem>()));
 		todoGroups.put("Archive", new TodoGroup("Archive", new ArrayList<TodoItem>()));
+		
+		todoGroups.get("Todo Items").getItems().addAll(new ArrayList<TodoItem>() {{
+			add(new TodoItem(1, "Hello World", false));
+			add(new TodoItem(2, "Get milk", false));
+			add(new TodoItem(3, "Get eggs", true));
+		}});
+		
+		todoGroups.get("Archive").getItems().addAll(new ArrayList<TodoItem>() {{
+			add(new TodoItem(1, "Hi World", false));
+		}});
     }
 
     /**
@@ -150,8 +160,8 @@ public class TodoItemListFragment extends ListFragment {
         // When setting CHOICE_MODE_SINGLE, ListView will automatically
         // give items the 'activated' state when touched.
         getListView().setChoiceMode(activateOnItemClick
-                ? ListView.CHOICE_MODE_SINGLE
-                : ListView.CHOICE_MODE_NONE);
+            ? ListView.CHOICE_MODE_SINGLE
+            : ListView.CHOICE_MODE_NONE);
     }
 
     private void setActivatedPosition(int position) {
