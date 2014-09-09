@@ -1,12 +1,19 @@
 package com.michaelblouin.notes;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
+import android.app.ActionBar;
 import android.app.Activity;
-import android.content.Intent;
+import android.app.FragmentManager;
 import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.CheckBox;
 
 import com.michaelblouin.todo.TodoGroup;
+import com.michaelblouin.todo.TodoItem;
 
 /**
  * An activity representing a list of Todo Items. This activity
@@ -24,31 +31,64 @@ import com.michaelblouin.todo.TodoGroup;
  * {@link TodoItemListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class TodoItemListActivity extends Activity implements TodoItemListFragment.Callbacks {
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
-    private boolean mTwoPane;
+public class TodoItemListActivity extends Activity implements TodoItemListFragment.Callbacks, TodoGroupProvider {
+	private final static Map<String, TodoGroup> todoGroups;
+	static
+    {
+		todoGroups = new HashMap<String, TodoGroup>();
+		todoGroups.put("Todo Items", new TodoGroup("Todo Items", new ArrayList<TodoItem>()));
+		todoGroups.put("Archive", new TodoGroup("Archive", new ArrayList<TodoItem>()));
+		
+		todoGroups.get("Todo Items").getItems().addAll(new ArrayList<TodoItem>() {{
+			add(new TodoItem(1, "Hello World", false));
+			add(new TodoItem(2, "Get milk", false));
+			add(new TodoItem(3, "Get eggs", true));
+		}});
+		
+		todoGroups.get("Archive").getItems().addAll(new ArrayList<TodoItem>() {{
+			add(new TodoItem(4, "Hi World", false));
+		}});
+    }
+	
+	private static final String TodoGroupListFragmentTag = "TodoGroupListFragment";
+	private static final String TodoItemListFragmentTag = "TodoItemListFragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todoitem_list);
-
-        if (findViewById(R.id.todoitem_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-large and
-            // res/values-sw600dp). If this view is present, then the
-            // activity should be in two-pane mode.
-            mTwoPane = true;
-
-            // In two-pane mode, list items should be given the
-            // 'activated' state when touched.
-            ((TodoItemListFragment) getFragmentManager()
-            	.findFragmentById(R.id.todoitem_list))
-                	.setActivateOnItemClick(true);
-        }
+        
+        getFragmentManager()
+	    	.beginTransaction()
+	        .add(R.id.todoitem_detail_container, new TodoItemListFragment(), TodoGroupListFragmentTag)
+	        .commit();
+        
+        getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+    	FragmentManager fragmentManager = getFragmentManager();
+    	
+    	if (fragmentManager.getBackStackEntryCount() > 0) {
+    		getActionBar().setDisplayHomeAsUpEnabled(false);
+    		getActionBar().setHomeButtonEnabled(false);
+    		fragmentManager.popBackStack();
+    	}
+    	
+    	return true;
+    }
+    
+    public void onCheckboxClicked(View view) {
+		CheckBox checkbox = (CheckBox) view;
+		Object checkboxTag = checkbox.getTag();
+		
+		if (!(checkboxTag instanceof TodoItem)) {
+			throw new IllegalStateException("Error: Expected TodoItem in checkbox tag");
+		}
+		
+		TodoItem item = (TodoItem) checkboxTag;
+		item.setChecked(checkbox.isChecked());
     }
 
     /**
@@ -57,36 +97,28 @@ public class TodoItemListActivity extends Activity implements TodoItemListFragme
      */
     @Override
     public void onItemSelected(String id) {
-    	Map<String, TodoGroup> todoGroups =
-			((TodoItemListFragment) getFragmentManager()
-				.findFragmentById(R.id.todoitem_list))
-            		.getTodoGroups();
-    	
     	if (!todoGroups.containsKey(id)) {
     		throw new IllegalStateException("The given TodoGroup was not found");
     	}
     	
-    	TodoGroup selectedGroup = todoGroups.get(id);
-    	
-        if (mTwoPane) {
-            // In two-pane mode, show the detail view in this activity by
-            // adding or replacing the detail fragment using a
-            // fragment transaction.
-            Bundle arguments = new Bundle();
-            arguments.putSerializable(TodoItemDetailFragment.ARG_ITEM_GROUP, selectedGroup);
-            
-            TodoItemDetailFragment fragment = new TodoItemDetailFragment();
-            fragment.setArguments(arguments);
-            getFragmentManager()
-            	.beginTransaction()
-                .replace(R.id.todoitem_detail_container, fragment)
-                .commit();
-        } else {
-            // In single-pane mode, simply start the detail activity
-            // for the selected item ID.
-            Intent detailIntent = new Intent(this, TodoItemDetailActivity.class);
-            detailIntent.putExtra(TodoItemDetailFragment.ARG_ITEM_GROUP, selectedGroup);
-            startActivity(detailIntent);
-        }
+    	Bundle arguments = new Bundle();
+        arguments.putString(TodoItemDetailFragment.ARG_ITEM_ID, id);
+        
+        TodoItemDetailFragment fragment = new TodoItemDetailFragment();
+        fragment.setArguments(arguments);
+        
+        getFragmentManager()
+        	.beginTransaction()
+            .replace(R.id.todoitem_detail_container, fragment, TodoItemListFragmentTag)
+            .addToBackStack(null)
+            .commit();
+        
+        getActionBar().setHomeButtonEnabled(true);
+    	getActionBar().setDisplayHomeAsUpEnabled(true);
     }
+
+	@Override
+	public Map<String, TodoGroup> getTodoGroups() {
+		return todoGroups;
+	}
 }

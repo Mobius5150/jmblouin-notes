@@ -1,6 +1,7 @@
 package com.michaelblouin.notes;
 
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.ListFragment;
@@ -86,13 +87,30 @@ public class TodoItemDetailFragment extends ListFragment {
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             mItem = (TodoGroup) arguments.getSerializable(ARG_ITEM_GROUP);
-            List<TodoItem> todoItems = mItem.getItems();
-            
-            setListAdapter(
+        }
+        
+        if (arguments.containsKey(ARG_ITEM_ID)) {
+        	Map<String, TodoGroup> todoGroups = ((TodoGroupProvider) getActivity()).getTodoGroups();
+        	
+        	if (!todoGroups.containsKey(arguments.getString(ARG_ITEM_ID))) {
+        		throw new IllegalStateException("Error: The given item id was not found in the collection");
+        	}
+        	
+        	mItem = todoGroups.get(arguments.getString(ARG_ITEM_ID));
+        }
+        
+        if (null != mItem) {
+        	List<TodoItem> todoItems = mItem.getItems();
+        	
+        	setListAdapter(
         		new TodoItemListAdapter<TodoItem>(
     				getActivity(), 
     				todoItems.toArray(new TodoItem[todoItems.size()])));
         }
+    }
+    
+    public TodoGroup getTodoGroup() {
+    	return mItem;
     }
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -108,13 +126,17 @@ public class TodoItemDetailFragment extends ListFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
-        // Activities containing this fragment must implement its callbacks.
-        if (!(activity instanceof Callbacks)) {
-            throw new IllegalStateException("Activity must implement fragment's callbacks.");
+        
+        if (!(activity instanceof TodoGroupProvider)) {
+        	throw new IllegalStateException("Activity must implement TodoGroupProvider");
         }
-
-        mCallbacks = (Callbacks) activity;
+//
+//        // Activities containing this fragment must implement its callbacks.
+//        if (!(activity instanceof Callbacks)) {
+//            throw new IllegalStateException("Activity must implement fragment's callbacks.");
+//        }
+//
+//        mCallbacks = (Callbacks) activity;
     }
 
     @Override

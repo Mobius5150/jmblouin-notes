@@ -2,7 +2,7 @@ package com.michaelblouin.notes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.michaelblouin.todo.TodoGroup;
-import com.michaelblouin.todo.TodoItem;
 
 /**
  * A list fragment representing a list of Todo Items. This fragment
@@ -24,25 +23,9 @@ import com.michaelblouin.todo.TodoItem;
  * interface.
  */
 public class TodoItemListFragment extends ListFragment {
-	private final static Map<String, TodoGroup> todoGroups;
-	static
-    {
-		todoGroups = new HashMap<String, TodoGroup>();
-		todoGroups.put("Todo Items", new TodoGroup("Todo Items", new ArrayList<TodoItem>()));
-		todoGroups.put("Archive", new TodoGroup("Archive", new ArrayList<TodoItem>()));
-		
-		todoGroups.get("Todo Items").getItems().addAll(new ArrayList<TodoItem>() {{
-			add(new TodoItem(1, "Hello World", false));
-			add(new TodoItem(2, "Get milk", false));
-			add(new TodoItem(3, "Get eggs", true));
-		}});
-		
-		todoGroups.get("Archive").getItems().addAll(new ArrayList<TodoItem>() {{
-			add(new TodoItem(4, "Hi World", false));
-		}});
-    }
-
-    /**
+	private Map<String, TodoGroup> todoGroups = null;
+	
+	/**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
      */
@@ -87,10 +70,6 @@ public class TodoItemListFragment extends ListFragment {
      */
     public TodoItemListFragment() {
     }
-    
-    public Map<String, TodoGroup> getTodoGroups() {
-    	return todoGroups;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -122,8 +101,13 @@ public class TodoItemListFragment extends ListFragment {
         if (!(activity instanceof Callbacks)) {
             throw new IllegalStateException("Activity must implement fragment's callbacks.");
         }
+        
+        if (!(activity instanceof TodoGroupProvider)) {
+            throw new IllegalStateException("Activity must implement TodoGroupProvider");
+        }
 
         mCallbacks = (Callbacks) activity;
+        todoGroups = ((TodoGroupProvider) activity).getTodoGroups();
     }
 
     @Override
