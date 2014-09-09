@@ -14,7 +14,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 
-import com.michaelblouin.notes.R.id;
 import com.michaelblouin.todo.TodoGroup;
 import com.michaelblouin.todo.TodoItem;
 
@@ -71,16 +70,6 @@ public class TodoItemListActivity extends Activity implements TodoItemListFragme
 	    return true;
 	}
 	
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		// Only show the TodoItems menu if the TodoItems list is available
-		menu.setGroupVisible(
-			R.id.todoitem_menu_group, 
-			getFragmentManager().findFragmentByTag(TodoItemListFragmentTag) != null);
-		
-	    return true;
-	}
-	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,7 +119,6 @@ public class TodoItemListActivity extends Activity implements TodoItemListFragme
     			break;
     			
     		default:
-    			System.out.println(String.format("Button pressed with id: %d", item.getItemId()));
     			FragmentManager fragmentManager = getFragmentManager();
     	    	
     	    	if (fragmentManager.getBackStackEntryCount() > 0) {
@@ -186,7 +174,6 @@ public class TodoItemListActivity extends Activity implements TodoItemListFragme
 
 	@Override
 	public void onBackStackChanged() {
-		System.out.println("Back stack changed");
 		FragmentManager fragmentManager = getFragmentManager();
     	
     	if (fragmentManager.getBackStackEntryCount() == 0) {
@@ -196,7 +183,6 @@ public class TodoItemListActivity extends Activity implements TodoItemListFragme
     		activeFragmentTag = TodoGroupListFragmentTag;
     		invalidateOptionsMenu();
     	} else if (null != fragmentManager.findFragmentByTag(TodoItemListFragmentTag)) {
-    		System.out.println("Todo Item List Fragment active");
     		getActionBar().setHomeButtonEnabled(true);
         	getActionBar().setDisplayHomeAsUpEnabled(true);
     	}
