@@ -64,6 +64,22 @@ public class TodoItemListActivity extends Activity implements TodoItemListFragme
 	        .commit();
         
         getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
+        
+        checkViewStateConsistency();
+    }
+    
+    private void checkViewStateConsistency() {
+    	FragmentManager fragmentManager = getFragmentManager();
+    	
+    	Boolean todoGroupFound = null != fragmentManager.findFragmentByTag(TodoGroupListFragmentTag);
+    	Boolean todoListFound = null != fragmentManager.findFragmentByTag(TodoItemListFragmentTag);
+    	
+    	if (todoGroupFound && todoListFound) {
+    		getFragmentManager()
+		    	.beginTransaction()
+		        .remove(fragmentManager.findFragmentByTag(TodoItemListFragmentTag))
+		        .commit();
+    	}
     }
     
     @Override
