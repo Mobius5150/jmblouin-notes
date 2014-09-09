@@ -31,6 +31,9 @@ import com.michaelblouin.todo.TodoItem;
  * {@link TodoItemListFragment.Callbacks} interface
  * to listen for item selections.
  */
+
+// TODO: Remove the Supress Warnings
+@SuppressWarnings("serial")
 public class TodoItemListActivity extends Activity implements TodoItemListFragment.Callbacks, TodoGroupProvider {
 	private final static Map<String, TodoGroup> todoGroups;
 	static

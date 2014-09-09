@@ -23,7 +23,6 @@ public class TodoItemDetailFragment extends ListFragment {
      * The fragment argument representing the item ID that this fragment
      * represents.
      */
-	public static final String ARG_ITEM_GROUP = "com.michaelblouin.notes.item_group";
 	public static final String ARG_ITEM_ID = "com.michaelblouin.notes.item_id";
 
 	/**
@@ -82,13 +81,6 @@ public class TodoItemDetailFragment extends ListFragment {
         super.onCreate(savedInstanceState);
         Bundle arguments = getArguments();
         
-        if (arguments.containsKey(ARG_ITEM_GROUP)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            mItem = (TodoGroup) arguments.getSerializable(ARG_ITEM_GROUP);
-        }
-        
         if (arguments.containsKey(ARG_ITEM_ID)) {
         	Map<String, TodoGroup> todoGroups = ((TodoGroupProvider) getActivity()).getTodoGroups();
         	
@@ -121,6 +113,8 @@ public class TodoItemDetailFragment extends ListFragment {
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
+        
+        this.getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
     }
 
     @Override
@@ -150,7 +144,7 @@ public class TodoItemDetailFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
-
+        System.out.println("List item clicked");
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         mCallbacks.onItemSelected(mItem.getItems().get(position).getId().toString());
@@ -172,9 +166,9 @@ public class TodoItemDetailFragment extends ListFragment {
     public void setActivateOnItemClick(boolean activateOnItemClick) {
         // When setting CHOICE_MODE_SINGLE, ListView will automatically
         // give items the 'activated' state when touched.
-        getListView().setChoiceMode(activateOnItemClick
-            ? ListView.CHOICE_MODE_SINGLE
-            : ListView.CHOICE_MODE_NONE);
+//        getListView().setChoiceMode(activateOnItemClick
+//            ? ListView.CHOICE_MODE_SINGLE
+//            : ListView.CHOICE_MODE_NONE);
     }
 
     private void setActivatedPosition(int position) {
