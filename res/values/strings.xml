@@ -3,5 +3,7 @@
 
     <string name="app_name">jmblouin-notes</string>
     <string name="title_todoitem_detail">TodoItem Detail</string>
+    <string name="add_to">Add To&#8230;</string>
+    <string name="new_todoitem">New Item</string>
 
 </resources>

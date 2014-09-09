@@ -8,10 +8,13 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 
+import com.michaelblouin.notes.R.id;
 import com.michaelblouin.todo.TodoGroup;
 import com.michaelblouin.todo.TodoItem;
 
@@ -34,7 +37,7 @@ import com.michaelblouin.todo.TodoItem;
 
 // TODO: Remove the Supress Warnings
 @SuppressWarnings("serial")
-public class TodoItemListActivity extends Activity implements TodoItemListFragment.Callbacks, TodoGroupProvider {
+public class TodoItemListActivity extends Activity implements TodoItemListFragment.Callbacks, TodoGroupProvider, FragmentManager.OnBackStackChangedListener {
 	private final static Map<String, TodoGroup> todoGroups;
 	static
     {
@@ -55,16 +58,42 @@ public class TodoItemListActivity extends Activity implements TodoItemListFragme
 	
 	private static final String TodoGroupListFragmentTag = "TodoGroupListFragment";
 	private static final String TodoItemListFragmentTag = "TodoItemListFragment";
+	private String activeFragmentTag;
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.menu_todogroup_options, menu);
+	    menu.setGroupVisible(
+				R.id.todoitem_menu_group, 
+				TodoItemListFragmentTag == activeFragmentTag);
+	    
+	    return true;
+	}
+	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		// Only show the TodoItems menu if the TodoItems list is available
+		menu.setGroupVisible(
+			R.id.todoitem_menu_group, 
+			getFragmentManager().findFragmentByTag(TodoItemListFragmentTag) != null);
+		
+	    return true;
+	}
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todoitem_list);
+        activeFragmentTag = TodoGroupListFragmentTag;
         
-        getFragmentManager()
+        FragmentManager fragmentManager = getFragmentManager();
+        fragmentManager
 	    	.beginTransaction()
 	        .add(R.id.todoitem_detail_container, new TodoItemListFragment(), TodoGroupListFragmentTag)
 	        .commit();
+        
+        fragmentManager.addOnBackStackChangedListener(this);
         
         getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         
@@ -82,17 +111,32 @@ public class TodoItemListActivity extends Activity implements TodoItemListFragme
 		    	.beginTransaction()
 		        .remove(fragmentManager.findFragmentByTag(TodoItemListFragmentTag))
 		        .commit();
+    		
+    		activeFragmentTag = TodoGroupListFragmentTag;
+    		
+    		invalidateOptionsMenu();
     	}
     }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-    	FragmentManager fragmentManager = getFragmentManager();
-    	
-    	if (fragmentManager.getBackStackEntryCount() > 0) {
-    		getActionBar().setDisplayHomeAsUpEnabled(false);
-    		getActionBar().setHomeButtonEnabled(false);
-    		fragmentManager.popBackStack();
+    	switch (item.getItemId()) {
+    		case R.id.new_todoitem:
+    			System.out.println("New todoitem pressed");
+    			break;
+    			
+    		case R.id.add_to:
+    			System.out.println("Add to pressed");
+    			break;
+    			
+    		default:
+    			System.out.println(String.format("Button pressed with id: %d", item.getItemId()));
+    			FragmentManager fragmentManager = getFragmentManager();
+    	    	
+    	    	if (fragmentManager.getBackStackEntryCount() > 0) {
+    	    		activeFragmentTag = TodoGroupListFragmentTag;
+    	    		fragmentManager.popBackStack();
+    	    	}
     	}
     	
     	return true;
@@ -132,12 +176,31 @@ public class TodoItemListActivity extends Activity implements TodoItemListFragme
             .addToBackStack(null)
             .commit();
         
-        getActionBar().setHomeButtonEnabled(true);
-    	getActionBar().setDisplayHomeAsUpEnabled(true);
+    	activeFragmentTag = TodoItemListFragmentTag;
     }
 
 	@Override
 	public Map<String, TodoGroup> getTodoGroups() {
 		return todoGroups;
+	}
+
+	@Override
+	public void onBackStackChanged() {
+		System.out.println("Back stack changed");
+		FragmentManager fragmentManager = getFragmentManager();
+    	
+    	if (fragmentManager.getBackStackEntryCount() == 0) {
+    		// If the back stack is empty, we're back at the main view
+    		getActionBar().setDisplayHomeAsUpEnabled(false);
+    		getActionBar().setHomeButtonEnabled(false);
+    		activeFragmentTag = TodoGroupListFragmentTag;
+    		invalidateOptionsMenu();
+    	} else if (null != fragmentManager.findFragmentByTag(TodoItemListFragmentTag)) {
+    		System.out.println("Todo Item List Fragment active");
+    		getActionBar().setHomeButtonEnabled(true);
+        	getActionBar().setDisplayHomeAsUpEnabled(true);
+    	}
+    	
+    	invalidateOptionsMenu();
 	}
 }
