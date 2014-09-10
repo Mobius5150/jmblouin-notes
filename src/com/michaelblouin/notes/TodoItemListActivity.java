@@ -26,17 +26,17 @@ import com.michaelblouin.todo.TodoItem;
  * item details side-by-side using two vertical panes.
  * <p>
  * The activity makes heavy use of fragments. The list of items is a
- * {@link TodoItemListFragment} and the item details
- * (if present) is a {@link TodoItemDetailFragment}.
+ * {@link TodoGroupListFragment} and the item details
+ * (if present) is a {@link TodoItemListFragment}.
  * <p>
  * This activity also implements the required
- * {@link TodoItemListFragment.Callbacks} interface
+ * {@link TodoGroupListFragment.Callbacks} interface
  * to listen for item selections.
  */
 
 // TODO: Remove the Supress Warnings
 @SuppressWarnings("serial")
-public class TodoItemListActivity extends Activity implements TodoItemListFragment.Callbacks, TodoGroupProvider, FragmentManager.OnBackStackChangedListener {
+public class TodoItemListActivity extends Activity implements TodoGroupListFragment.Callbacks, TodoGroupProvider, FragmentManager.OnBackStackChangedListener {
 	private final static Map<String, TodoGroup> todoGroups;
 	static
     {
@@ -79,7 +79,7 @@ public class TodoItemListActivity extends Activity implements TodoItemListFragme
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager
 	    	.beginTransaction()
-	        .add(R.id.todoitem_detail_container, new TodoItemListFragment(), TodoGroupListFragmentTag)
+	        .add(R.id.todoitem_detail_container, new TodoGroupListFragment(), TodoGroupListFragmentTag)
 	        .commit();
         
         fragmentManager.addOnBackStackChangedListener(this);
@@ -143,7 +143,7 @@ public class TodoItemListActivity extends Activity implements TodoItemListFragme
     }
 
     /**
-     * Callback method from {@link TodoItemListFragment.Callbacks}
+     * Callback method from {@link TodoGroupListFragment.Callbacks}
      * indicating that the item with the given ID was selected.
      */
     @Override
@@ -153,9 +153,9 @@ public class TodoItemListActivity extends Activity implements TodoItemListFragme
     	}
     	
     	Bundle arguments = new Bundle();
-        arguments.putString(TodoItemDetailFragment.ARG_ITEM_ID, id);
+        arguments.putString(TodoItemListFragment.ARG_ITEM_ID, id);
         
-        TodoItemDetailFragment fragment = new TodoItemDetailFragment();
+        TodoItemListFragment fragment = new TodoItemListFragment();
         fragment.setArguments(arguments);
         
         getFragmentManager()

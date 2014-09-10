@@ -1,6 +1,7 @@
 package com.michaelblouin.notes;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
@@ -8,25 +9,28 @@ import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView.MultiChoiceModeListener;
 import android.widget.ListView;
 
 import com.michaelblouin.todo.TodoGroup;
+import com.michaelblouin.todo.TodoItem;
 
 /**
- * A list fragment representing a list of Todo Items. This fragment
- * also supports tablet devices by allowing list items to be given an
- * 'activated' state upon selection. This helps indicate which item is
- * currently being viewed in a {@link TodoItemDetailFragment}.
- * <p>
- * Activities containing this fragment MUST implement the {@link Callbacks}
- * interface.
+ * A fragment representing a single TodoItem detail screen.
+ * This fragment is either contained in a {@link TodoItemListActivity}
+ * in two-pane mode (on tablets) or a {@link TodoItemDetailActivity}
+ * on handsets.
  */
-public class TodoItemListFragment extends ListFragment {
-	private Map<String, TodoGroup> todoGroups = null;
-	
+public class TodoItemListFragment extends ListFragment implements MultiChoiceModeListener {
+    /**
+     * The fragment argument representing the item ID that this fragment
+     * represents.
+     */
+	public static final String ARG_ITEM_ID = "com.michaelblouin.notes.item_id";
+
 	/**
      * The serialization (saved instance state) Bundle key representing the
      * activated item position. Only used on tablets.
@@ -34,37 +38,14 @@ public class TodoItemListFragment extends ListFragment {
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
 
     /**
-     * The fragment's current callback object, which is notified of list item
-     * clicks.
-     */
-    private Callbacks mCallbacks = sDummyCallbacks;
-
-    /**
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
-
+	
     /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
+     * The dummy content this fragment is presenting.
      */
-    public interface Callbacks {
-        /**
-         * Callback for when an item has been selected.
-         */
-        public void onItemSelected(String id);
-    }
-
-    /**
-     * A dummy implementation of the {@link Callbacks} interface that does
-     * nothing. Used only when this fragment is not attached to an activity.
-     */
-    private static Callbacks sDummyCallbacks = new Callbacks() {
-        @Override
-        public void onItemSelected(String id) {
-        }
-    };
+    private TodoGroup mItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -76,15 +57,32 @@ public class TodoItemListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Bundle arguments = getArguments();
         
-        Collection<TodoGroup> groups = todoGroups.values();
-        setListAdapter(
-    		new TodoGroupListAdapter<TodoGroup>(
-                getActivity(),
-                groups.toArray(new TodoGroup[groups.size()])));
+        if (arguments.containsKey(ARG_ITEM_ID)) {
+        	Map<String, TodoGroup> todoGroups = ((TodoGroupProvider) getActivity()).getTodoGroups();
+        	
+        	if (!todoGroups.containsKey(arguments.getString(ARG_ITEM_ID))) {
+        		throw new IllegalStateException("Error: The given item id was not found in the collection");
+        	}
+        	
+        	mItem = todoGroups.get(arguments.getString(ARG_ITEM_ID));
+        }
+        
+        if (null != mItem) {
+        	List<TodoItem> todoItems = mItem.getItems();
+        	
+        	setListAdapter(
+        		new TodoItemListAdapter<TodoItem>(
+    				getActivity(), 
+    				todoItems.toArray(new TodoItem[todoItems.size()])));
+        }
+    }
+    
+    public TodoGroup getTodoGroup() {
+    	return mItem;
     }
 
-    @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
@@ -93,40 +91,26 @@ public class TodoItemListFragment extends ListFragment {
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
+        
+        ListView listView = getListView();
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setMultiChoiceModeListener(this);
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-
-        // Activities containing this fragment must implement its callbacks.
-        if (!(activity instanceof Callbacks)) {
-            throw new IllegalStateException("Activity must implement fragment's callbacks.");
-        }
         
         if (!(activity instanceof TodoGroupProvider)) {
-            throw new IllegalStateException("Activity must implement TodoGroupProvider");
+        	throw new IllegalStateException("Activity must implement TodoGroupProvider");
         }
-
-        mCallbacks = (Callbacks) activity;
-        todoGroups = ((TodoGroupProvider) activity).getTodoGroups();
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-
-        // Reset the active callbacks interface to the dummy implementation.
-        mCallbacks = sDummyCallbacks;
     }
 
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
-
-        // Notify the active callbacks interface (the activity, if the
-        // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(((TodoGroup)todoGroups.values().toArray()[position]).getGroupName());
+        
+        listView.setItemChecked(position, !listView.isItemChecked(position));
     }
 
     @Override
@@ -138,18 +122,6 @@ public class TodoItemListFragment extends ListFragment {
         }
     }
 
-    /**
-     * Turns on activate-on-click mode. When this mode is on, list items will be
-     * given the 'activated' state when touched.
-     */
-    public void setActivateOnItemClick(boolean activateOnItemClick) {
-        // When setting CHOICE_MODE_SINGLE, ListView will automatically
-        // give items the 'activated' state when touched.
-        getListView().setChoiceMode(activateOnItemClick
-            ? ListView.CHOICE_MODE_SINGLE
-            : ListView.CHOICE_MODE_NONE);
-    }
-
     private void setActivatedPosition(int position) {
         if (position == ListView.INVALID_POSITION) {
             getListView().setItemChecked(mActivatedPosition, false);
@@ -159,4 +131,51 @@ public class TodoItemListFragment extends ListFragment {
 
         mActivatedPosition = position;
     }
+    
+	@Override
+	public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+		// TODO Auto-generated method stub
+		switch (menuItem.getItemId()) {
+			case R.id.add_to:
+				System.out.println("Add item to clicked");
+				break;
+			default:
+				System.out.println("Action item clicked");	
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+		MenuInflater inflater = actionMode.getMenuInflater();
+		inflater.inflate(R.menu.menu_todoitem_context, menu);
+		return true;
+	}
+
+	@Override
+	public void onDestroyActionMode(ActionMode actionMode) {
+		System.out.println("Action mode destroyed");
+		selectedItemPositions.clear();
+	}
+
+	@Override
+	public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	List<Integer> selectedItemPositions = new ArrayList<Integer>();
+	@Override
+	public void onItemCheckedStateChanged(ActionMode actionMode, int position, long id, boolean checked) {
+		// TODO Auto-generated method stub
+		System.out.println(String.format("Item %d is now %schecked", position, checked ? "": "un"));
+		
+		if (checked) {
+			if (!selectedItemPositions.contains(position)) {
+				selectedItemPositions.add(position);
+			}
+		} else {
+			selectedItemPositions.remove(position);
+		}
+	}
 }
