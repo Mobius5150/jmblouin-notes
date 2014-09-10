@@ -6,7 +6,14 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView.MultiChoiceModeListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.michaelblouin.todo.TodoGroup;
@@ -18,7 +25,7 @@ import com.michaelblouin.todo.TodoItem;
  * in two-pane mode (on tablets) or a {@link TodoItemDetailActivity}
  * on handsets.
  */
-public class TodoItemDetailFragment extends ListFragment {
+public class TodoItemDetailFragment extends ListFragment implements MultiChoiceModeListener {
     /**
      * The fragment argument representing the item ID that this fragment
      * represents.
@@ -114,7 +121,10 @@ public class TodoItemDetailFragment extends ListFragment {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
         
-        this.getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
+        ListView listView = getListView();
+        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+        listView.setMultiChoiceModeListener(this);
+        setActivateOnItemClick(true);
     }
 
     @Override
@@ -124,13 +134,6 @@ public class TodoItemDetailFragment extends ListFragment {
         if (!(activity instanceof TodoGroupProvider)) {
         	throw new IllegalStateException("Activity must implement TodoGroupProvider");
         }
-//
-//        // Activities containing this fragment must implement its callbacks.
-//        if (!(activity instanceof Callbacks)) {
-//            throw new IllegalStateException("Activity must implement fragment's callbacks.");
-//        }
-//
-//        mCallbacks = (Callbacks) activity;
     }
 
     @Override
@@ -144,10 +147,8 @@ public class TodoItemDetailFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView listView, View view, int position, long id) {
         super.onListItemClick(listView, view, position, id);
-        System.out.println("List item clicked");
-        // Notify the active callbacks interface (the activity, if the
-        // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(mItem.getItems().get(position).getId().toString());
+        
+        listView.setItemChecked(position, !listView.isItemChecked(position));
     }
 
     @Override
@@ -180,4 +181,35 @@ public class TodoItemDetailFragment extends ListFragment {
 
         mActivatedPosition = position;
     }
+    
+	@Override
+	public boolean onActionItemClicked(ActionMode arg0, MenuItem arg1) {
+		// TODO Auto-generated method stub
+		System.out.println("Action item clicked");
+		return false;
+	}
+
+	@Override
+	public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+		MenuInflater inflater = actionMode.getMenuInflater();
+		inflater.inflate(R.menu.menu_todoitem_context, menu);
+		return true;
+	}
+
+	@Override
+	public void onDestroyActionMode(ActionMode actionMode) {
+		System.out.println("Action mode destroyed");
+	}
+
+	@Override
+	public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void onItemCheckedStateChanged(ActionMode actionMode, int position, long id, boolean checked) {
+		// TODO Auto-generated method stub
+		System.out.println(String.format("Item %d is now %schecked", position, checked ? "": "un"));
+	}
 }

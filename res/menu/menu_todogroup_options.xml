@@ -5,15 +5,5 @@
 	          android:icon="@drawable/ic_action_new"
 	          android:title="@string/new_todoitem"
 	          android:showAsAction="ifRoom"/>
-	    
-	    <item android:id="@+id/add_to"
-	          android:icon="@drawable/ic_action_new"
-	          android:title="@string/add_to">
-	          <menu>
-	              <item android:title="Todo Items" />
-	              <item android:title="Archive" />
-	          </menu>
-	    </item>
     </group>
-
 </menu>

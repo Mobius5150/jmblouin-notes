@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.TextView;
+
 import com.michaelblouin.todo.TodoItem;
 
 public class TodoItemListAdapter<T extends TodoItem> extends ArrayAdapter<T> {
@@ -25,10 +27,18 @@ public class TodoItemListAdapter<T extends TodoItem> extends ArrayAdapter<T> {
 		}
 	    
 		CheckBox checkbox = (CheckBox) view.findViewById(R.id.todoCheckBox);
-		checkbox.setText(item.getText());
-		checkbox.setChecked(item.isChecked());
-		checkbox.setId(item.getId());
-		checkbox.setTag(item);
+		if (null != checkbox) {
+			checkbox.setChecked(item.isChecked());
+			checkbox.setId(item.getId());
+			checkbox.setTag(item);
+		}
+		
+		TextView textview = (TextView) view.findViewById(R.id.titletext);
+		if (null != textview) {
+			textview.setText(item.getText());
+		} else if (null != checkbox) {
+			checkbox.setText(item.getText());
+		}
 		
 	    return view;
 	}

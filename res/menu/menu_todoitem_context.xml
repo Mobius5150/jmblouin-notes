@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/new_todoitem"
+          android:icon="@drawable/ic_action_new"
+          android:title="@string/new_todoitem"
+          android:showAsAction="ifRoom" />
+    
+    <item android:id="@+id/add_to"
+          android:icon="@drawable/ic_action_collection"
+          android:title="@string/move_to"
+          android:showAsAction="ifRoom">
+          <menu android:title="@string/move_to" >
+              
+              <item android:title="Todo Items" />
+              <item android:title="Archive" />
+          </menu>
+    </item>
+</menu>
