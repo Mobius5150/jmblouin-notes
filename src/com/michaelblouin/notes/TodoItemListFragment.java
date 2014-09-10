@@ -138,6 +138,11 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 		switch (menuItem.getItemId()) {
 			case R.id.add_to:
 				System.out.println("Add item to clicked");
+
+				for (Integer i: selectedItemPositions) {
+					System.out.println(String.format("Would be moving item at position: %d", i));
+				}
+
 				break;
 			default:
 				System.out.println("Action item clicked");	
@@ -167,7 +172,6 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 	List<Integer> selectedItemPositions = new ArrayList<Integer>();
 	@Override
 	public void onItemCheckedStateChanged(ActionMode actionMode, int position, long id, boolean checked) {
-		// TODO Auto-generated method stub
 		System.out.println(String.format("Item %d is now %schecked", position, checked ? "": "un"));
 		
 		if (checked) {
@@ -175,7 +179,7 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 				selectedItemPositions.add(position);
 			}
 		} else {
-			selectedItemPositions.remove(position);
+			selectedItemPositions.remove((Object)position);
 		}
 	}
 }
