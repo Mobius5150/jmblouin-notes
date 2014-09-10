@@ -46,6 +46,7 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
      * The dummy content this fragment is presenting.
      */
     private TodoGroup mItem;
+    private Map<String, TodoGroup> mItems;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -60,13 +61,13 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
         Bundle arguments = getArguments();
         
         if (arguments.containsKey(ARG_ITEM_ID)) {
-        	Map<String, TodoGroup> todoGroups = ((TodoGroupProvider) getActivity()).getTodoGroups();
+        	mItems = ((TodoGroupProvider) getActivity()).getTodoGroups();
         	
-        	if (!todoGroups.containsKey(arguments.getString(ARG_ITEM_ID))) {
+        	if (!mItems.containsKey(arguments.getString(ARG_ITEM_ID))) {
         		throw new IllegalStateException("Error: The given item id was not found in the collection");
         	}
         	
-        	mItem = todoGroups.get(arguments.getString(ARG_ITEM_ID));
+        	mItem = mItems.get(arguments.getString(ARG_ITEM_ID));
         }
         
         if (null != mItem) {
@@ -138,12 +139,17 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 		switch (menuItem.getItemId()) {
 			case R.id.add_to:
 				System.out.println("Add item to clicked");
+				break;
+				
+			case Menu.NONE:
+				System.out.println(String.format("Move to menu item clicked: %s", menuItem.getTitle()));
 
 				for (Integer i: selectedItemPositions) {
 					System.out.println(String.format("Would be moving item at position: %d", i));
 				}
 
 				break;
+				
 			default:
 				System.out.println("Action item clicked");	
 		}
@@ -166,8 +172,33 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 
 	@Override
 	public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-		// TODO Auto-generated method stub
-		return false;
+		System.out.println("Preparing menu");
+		// Add the menu items for each todo group, except the current one
+		MenuItem addToMenu = menu.findItem(R.id.add_to);
+
+		if (null == addToMenu) {
+			System.out.println("Menu item not found");
+			return false;
+		}
+		
+		if (!addToMenu.hasSubMenu()) {
+			System.out.println("No sub menu found");
+			return false;
+		}
+
+		Menu moveToMenu = addToMenu.getSubMenu();
+
+		int i = 0;
+		for (TodoGroup group: mItems.values()) {
+			if (mItem.getGroupName() == group.getGroupName()) {
+				continue;
+			}
+			
+			moveToMenu.add(Menu.NONE, Menu.NONE, i, group.getGroupName());
+			++i;
+		}
+
+		return true;
 	}
 	List<Integer> selectedItemPositions = new ArrayList<Integer>();
 	@Override
