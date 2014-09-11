@@ -147,6 +147,24 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 				System.out.println("Add item to clicked");
 				break;
 				
+			case R.id.delete_todoitem:
+				System.out.println("Delete todo item clicked");
+				List<TodoItem> items = mItem.getItems();
+
+				if (null != selectedItems) {
+					for (Pair<Integer, TodoItem> item: selectedItems) {
+						System.out.println(String.format("Deleting item %s (%d)", item.second.getText(), item.first));
+						if (!items.remove(item.second)) {
+							throw new IllegalStateException("Could not find item to delete in the collection");
+						}
+					}
+
+					selectedItems = null;
+				}
+				
+				refreshListView(getListView(), actionMode);
+				break;
+				
 			case Menu.NONE:
 				String addToGroupName = menuItem.getTitle().toString();
 				System.out.println(String.format("Move to menu item clicked: %s", addToGroupName));
@@ -168,9 +186,7 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 					selectedItems = null;
 				}
 
-				view.removeAllViewsInLayout();
-				view.invalidate();
-				actionMode.finish();
+				refreshListView(view, actionMode);
 				break;
 				
 			default:
@@ -178,6 +194,17 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 		}
 		
 		return true;
+	}
+	
+	private void refreshListView(ListView view, ActionMode mode) {
+		if (null != view) {
+			view.removeAllViewsInLayout();
+			view.invalidate();
+		}
+
+		if (null != mode) {
+			mode.finish();
+		}
 	}
 
 	@Override

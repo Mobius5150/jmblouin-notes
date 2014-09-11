@@ -5,6 +5,7 @@
     <string name="title_todoitem_detail">TodoItem Detail</string>
     <string name="move_to">Move To&#8230;</string>
     <string name="new_todoitem">New Item</string>
+    <string name="delete_todoitem">Remove</string>
     <string name="todo_items">Todo Items</string>
     <string name="archive">Archive</string>
     <string name="action_mode_select_todoitems">Select Todo Items</string>

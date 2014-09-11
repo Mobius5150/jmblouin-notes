@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/new_todoitem"
-          android:icon="@drawable/ic_action_new"
-          android:title="@string/new_todoitem"
+    <item android:id="@+id/delete_todoitem"
+          android:icon="@drawable/ic_action_discard"
+          android:title="@string/delete_todoitem"
           android:showAsAction="ifRoom" />
     
     <item android:id="@+id/add_to"
@@ -10,12 +10,6 @@
           android:title="@string/move_to"
           android:showAsAction="ifRoom">
           <menu android:id="@+id/move_to_item_menu" android:title="@string/move_to">
-              <!-- <item
-                  android:id="@+id/move_to_todoitems" 
-                  android:title="@string/todo_items" />
-              <item 
-                  android:id="@+id/move_to_archive"
-                  android:title="@string/archive" /> -->
           </menu>
     </item>
 </menu>
