@@ -7,5 +7,6 @@
     <string name="new_todoitem">New Item</string>
     <string name="todo_items">Todo Items</string>
     <string name="archive">Archive</string>
+    <string name="action_mode_select_todoitems">Select Todo Items</string>
 
 </resources>

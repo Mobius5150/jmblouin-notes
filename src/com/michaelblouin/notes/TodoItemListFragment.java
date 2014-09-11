@@ -185,6 +185,9 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 	public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
 		MenuInflater inflater = actionMode.getMenuInflater();
 		inflater.inflate(R.menu.menu_todoitem_context, menu);
+		
+		actionMode.setTitle(R.string.action_mode_select_todoitems);
+		
 		return true;
 	}
 
