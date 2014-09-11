@@ -1,5 +1,7 @@
 package com.michaelblouin.notes;
 
+import java.util.List;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +15,7 @@ import com.michaelblouin.todo.TodoItem;
 public class TodoItemListAdapter<T extends TodoItem> extends ArrayAdapter<T> {
 	final static int resource = R.layout.todo_item_list_item;
 
-	public TodoItemListAdapter(Context context, T[] objects) {
+	public TodoItemListAdapter(Context context, List<T> objects) {
 		super(context, resource, objects);
 	}
 
@@ -32,6 +34,8 @@ public class TodoItemListAdapter<T extends TodoItem> extends ArrayAdapter<T> {
 			checkbox.setId(item.getId());
 			checkbox.setTag(item);
 		}
+		
+		view.setTag(String.format("ItemId-%d", item.getId()));
 		
 		TextView textview = (TextView) view.findViewById(R.id.titletext);
 		if (null != textview) {

@@ -7,12 +7,14 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView.MultiChoiceModeListener;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.michaelblouin.todo.TodoGroup;
@@ -47,6 +49,11 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
      */
     private TodoGroup mItem;
     private Map<String, TodoGroup> mItems;
+    
+    /**
+     * The selected items in the list
+     */
+    List<Pair<Integer, TodoItem>> selectedItems;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -76,7 +83,7 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
         	setListAdapter(
         		new TodoItemListAdapter<TodoItem>(
     				getActivity(), 
-    				todoItems.toArray(new TodoItem[todoItems.size()])));
+    				todoItems));
         }
     }
     
@@ -142,19 +149,36 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 				break;
 				
 			case Menu.NONE:
-				System.out.println(String.format("Move to menu item clicked: %s", menuItem.getTitle()));
+				String addToGroupName = menuItem.getTitle().toString();
+				System.out.println(String.format("Move to menu item clicked: %s", addToGroupName));
+				
+				if (!mItems.containsKey(addToGroupName)) {
+					throw new IllegalStateException("Selected group was not found in the group list");
+				}
+				
+				TodoGroup addToGroup = mItems.get(addToGroupName);
 
-				for (Integer i: selectedItemPositions) {
-					System.out.println(String.format("Would be moving item at position: %d", i));
+				ListView view = getListView();
+
+				if (null != selectedItems) {
+					for (Pair<Integer, TodoItem> item: selectedItems) {
+						System.out.println(String.format("Moving item %s (%d)", item.second.getText(), item.first));
+						mItem.moveItemToGroup(item.second, addToGroup);
+					}
+					
+					selectedItems = null;
 				}
 
+				view.removeAllViewsInLayout();
+				view.invalidate();
+				actionMode.finish();
 				break;
 				
 			default:
 				System.out.println("Action item clicked");	
 		}
 		
-		return false;
+		return true;
 	}
 
 	@Override
@@ -167,22 +191,22 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 	@Override
 	public void onDestroyActionMode(ActionMode actionMode) {
 		System.out.println("Action mode destroyed");
-		selectedItemPositions.clear();
+		
+		if (selectedItems != null) {
+			selectedItems = null;
+		}
 	}
 
 	@Override
 	public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-		System.out.println("Preparing menu");
 		// Add the menu items for each todo group, except the current one
 		MenuItem addToMenu = menu.findItem(R.id.add_to);
 
 		if (null == addToMenu) {
-			System.out.println("Menu item not found");
 			return false;
 		}
 		
 		if (!addToMenu.hasSubMenu()) {
-			System.out.println("No sub menu found");
 			return false;
 		}
 
@@ -200,17 +224,29 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 
 		return true;
 	}
-	List<Integer> selectedItemPositions = new ArrayList<Integer>();
+	
 	@Override
 	public void onItemCheckedStateChanged(ActionMode actionMode, int position, long id, boolean checked) {
 		System.out.println(String.format("Item %d is now %schecked", position, checked ? "": "un"));
 		
+		TodoItem item = (TodoItem) getListView().getItemAtPosition(position);
+		
+		if (null == item) {
+			return;
+		}
+		
+		if (null == selectedItems) {
+			 selectedItems = new ArrayList<Pair<Integer, TodoItem>>();
+		}
+		
+		Pair<Integer, TodoItem> pair = new Pair<Integer, TodoItem>(position, item);
+		
 		if (checked) {
-			if (!selectedItemPositions.contains(position)) {
-				selectedItemPositions.add(position);
+			if (!selectedItems.contains(pair)) {
+				selectedItems.add(pair);
 			}
 		} else {
-			selectedItemPositions.remove((Object)position);
+			selectedItems.remove(pair);
 		}
 	}
 }
