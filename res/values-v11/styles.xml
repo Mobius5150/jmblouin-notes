@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
         Base application theme for API 11+. This theme completely replaces
@@ -12,8 +12,12 @@
     From Stack Overflow user "CommonsWare" (http://stackoverflow.com/users/115145/commonsware)
     Here: http://stackoverflow.com/questions/12386333/android-keep-blue-background-after-listview-selection
      -->
-    <style name="activated" parent="AppBaseTheme">
+    <style name="activated" parent="listItem">
 		<item name="android:background">?android:attr/activatedBackgroundIndicator</item>
+    </style>
+
+    <style name="listItem" parent="AppBaseTheme">
+        <item name="android:padding">8sp</item>
     </style>
 
 </resources>
