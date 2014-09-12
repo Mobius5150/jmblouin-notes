@@ -2,7 +2,6 @@ package com.michaelblouin.notes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import android.app.ActionBar;
@@ -217,12 +216,17 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
     	
     	if (fragmentManager.getBackStackEntryCount() == 0) {
     		// If the back stack is empty, we're back at the main view
+    		getActionBar().setTitle(getString(R.string.app_name));
     		getActionBar().setDisplayHomeAsUpEnabled(false);
     		getActionBar().setHomeButtonEnabled(false);
     		activeFragmentTag = TodoGroupListFragmentTag;
     		selectedTodoGroup = null;
     		invalidateOptionsMenu();
     	} else if (null != fragmentManager.findFragmentByTag(TodoItemListFragmentTag)) {
+    		if (selectedTodoGroup != null) {
+    			getActionBar().setTitle(selectedTodoGroup.getGroupName());
+    		}
+
     		getActionBar().setHomeButtonEnabled(true);
         	getActionBar().setDisplayHomeAsUpEnabled(true);
     	}
