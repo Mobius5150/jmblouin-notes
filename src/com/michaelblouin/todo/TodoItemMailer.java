@@ -2,11 +2,10 @@ package com.michaelblouin.todo;
 
 import java.util.List;
 
+import com.michaelblouin.notes.R;
+
 import android.app.Activity;
 import android.content.Intent;
-
-import com.michaelblouin.notes.R;
-import com.michaelblouin.notes.R.string;
 
 public class TodoItemMailer {
 	private String subject;
