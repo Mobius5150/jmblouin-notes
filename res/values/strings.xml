@@ -9,5 +9,9 @@
     <string name="todo_items">Todo Items</string>
     <string name="archive">Archive</string>
     <string name="action_mode_select_todoitems">Select Todo Items</string>
+    <string name="email_subject_todoitem">Todo Items</string>
+    <string name="email_subject_todogroup">%s Items</string>
+    <string name="prompt_email_send_todo_items">Send Todo Items</string>
+    <string name="email_todogroup">Email Todo List</string>
 
 </resources>

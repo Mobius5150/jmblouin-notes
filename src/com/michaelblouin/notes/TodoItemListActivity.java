@@ -58,6 +58,7 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
 	private static final String TodoGroupListFragmentTag = "TodoGroupListFragment";
 	private static final String TodoItemListFragmentTag = "TodoItemListFragment";
 	private String activeFragmentTag;
+	private TodoGroup selectedTodoGroup;
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -102,6 +103,7 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
 		        .commit();
     		
     		activeFragmentTag = TodoGroupListFragmentTag;
+    		selectedTodoGroup = null;
     		
     		invalidateOptionsMenu();
     	}
@@ -118,6 +120,16 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
     			System.out.println("Add to pressed");
     			break;
     			
+    		case R.id.email_todogroup:
+				System.out.println("Email todogroup button pressed");
+				
+				if (null == selectedTodoGroup) {
+					throw new IllegalStateException("Cannot email todo items: No todo group selected");
+				}
+				
+				TodoItemMailer.sendTodoItems(this, selectedTodoGroup);
+				break;
+				
     		default:
     			FragmentManager fragmentManager = getFragmentManager();
     	    	
@@ -151,6 +163,8 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
     	if (!todoGroups.containsKey(id)) {
     		throw new IllegalStateException("The given TodoGroup was not found");
     	}
+
+    	selectedTodoGroup = todoGroups.get(id);
     	
     	Bundle arguments = new Bundle();
         arguments.putString(TodoItemListFragment.ARG_ITEM_ID, id);
@@ -181,6 +195,7 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
     		getActionBar().setDisplayHomeAsUpEnabled(false);
     		getActionBar().setHomeButtonEnabled(false);
     		activeFragmentTag = TodoGroupListFragmentTag;
+    		selectedTodoGroup = null;
     		invalidateOptionsMenu();
     	} else if (null != fragmentManager.findFragmentByTag(TodoItemListFragmentTag)) {
     		getActionBar().setHomeButtonEnabled(true);

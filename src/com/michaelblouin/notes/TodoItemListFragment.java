@@ -141,7 +141,8 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
     
 	@Override
 	public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-		// TODO Auto-generated method stub
+		// This method is called when the user clicks on a button in one of the menus.
+		// Typically, the user has selected a set of todo items, and wants to apply an action to them. 
 		switch (menuItem.getItemId()) {
 			case R.id.add_to:
 				System.out.println("Add item to clicked");

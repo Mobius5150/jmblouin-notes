@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:id="@+id/todoitem_menu_group">
-	    <item android:id="@+id/new_todoitem"
-	          android:icon="@drawable/ic_action_new"
-	          android:title="@string/new_todoitem"
-	          android:showAsAction="ifRoom"/>
+	    <item 
+	        android:id="@+id/new_todoitem"
+			android:icon="@drawable/ic_action_new"
+			android:title="@string/new_todoitem"
+			android:showAsAction="ifRoom"/>
+	    
+	    <item 
+	        android:id="@+id/email_todogroup"
+	        android:icon="@drawable/ic_action_email"
+	        android:title="@string/email_todogroup"
+	        android:showAsAction="ifRoom"/>
     </group>
 </menu>

@@ -48,6 +48,6 @@ public class TodoItem implements Comparable<TodoItem>, Serializable {
 	
 	@Override
 	public String toString() {
-		return String.format("[%s] %s", checked ? " " : "X", getText());
+		return String.format("[%s] %s", checked ? "_" : "X", getText());
 	}
 }
