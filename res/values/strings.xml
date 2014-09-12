@@ -12,6 +12,8 @@
     <string name="email_subject_todoitem">Todo Items</string>
     <string name="email_subject_todogroup">%s Items</string>
     <string name="prompt_email_send_todo_items">Send Todo Items</string>
+    <string name="email_todogroups">Email All Todo Lists</string>
     <string name="email_todogroup">Email Todo List</string>
+    <string name="email_todoitems">Email Selected Todo Items</string>
 
 </resources>

@@ -2,6 +2,7 @@ package com.michaelblouin.notes;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import android.app.ActionBar;
@@ -16,6 +17,7 @@ import android.widget.CheckBox;
 
 import com.michaelblouin.todo.TodoGroup;
 import com.michaelblouin.todo.TodoItem;
+import com.michaelblouin.todo.TodoItemMailer;
 
 /**
  * An activity representing a list of Todo Items. This activity
@@ -64,9 +66,14 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.menu_todogroup_options, menu);
+	    
 	    menu.setGroupVisible(
 				R.id.todoitem_menu_group, 
 				TodoItemListFragmentTag == activeFragmentTag);
+	    
+	    menu.setGroupVisible(
+				R.id.todogroup_menu_group, 
+				TodoGroupListFragmentTag == activeFragmentTag);
 	    
 	    return true;
 	}
@@ -127,7 +134,25 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
 					throw new IllegalStateException("Cannot email todo items: No todo group selected");
 				}
 				
-				TodoItemMailer.sendTodoItems(this, selectedTodoGroup);
+				TodoItemMailer mailer = new TodoItemMailer(this);
+				mailer.addTodoGroup(selectedTodoGroup);
+				mailer.send();
+				break;
+				
+    		case R.id.email_todogroups:
+				System.out.println("Email todogroups button pressed");
+
+				if (null == todoGroups) {
+					throw new IllegalStateException("Cannot email todo items: Todo groups not loaded");
+				}
+
+				mailer = new TodoItemMailer(this);
+				
+				for (TodoGroup group: todoGroups.values()) {
+					mailer.addTodoGroup(group);
+				}
+				
+				mailer.send();
 				break;
 				
     		default:

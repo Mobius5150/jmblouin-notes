@@ -7,7 +7,6 @@ import java.util.Map;
 import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
-import android.util.Pair;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +17,7 @@ import android.widget.ListView;
 
 import com.michaelblouin.todo.TodoGroup;
 import com.michaelblouin.todo.TodoItem;
+import com.michaelblouin.todo.TodoItemMailer;
 
 /**
  * A fragment representing a single TodoItem detail screen.
@@ -52,7 +52,7 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
     /**
      * The selected items in the list
      */
-    List<Pair<Integer, TodoItem>> selectedItems;
+    List<TodoItem> selectedItems;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -153,9 +153,9 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 				List<TodoItem> items = mItem.getItems();
 
 				if (null != selectedItems) {
-					for (Pair<Integer, TodoItem> item: selectedItems) {
-						System.out.println(String.format("Deleting item %s (%d)", item.second.getText(), item.first));
-						if (!items.remove(item.second)) {
+					for (TodoItem item: selectedItems) {
+						System.out.println(String.format("Deleting item %s", item.getText()));
+						if (!items.remove(item)) {
 							throw new IllegalStateException("Could not find item to delete in the collection");
 						}
 					}
@@ -163,6 +163,19 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 					selectedItems = null;
 				}
 				
+				refreshListView(getListView(), actionMode);
+				break;
+				
+			case R.id.email_todoitems:
+				System.out.println("Email todogroup button pressed");
+				
+				if (null != selectedItems) {
+					TodoItemMailer mailer = new TodoItemMailer(getActivity());
+					mailer.addTodoItems(mItem.getGroupName(), selectedItems);
+					mailer.send();
+					selectedItems = null;
+				}
+
 				refreshListView(getListView(), actionMode);
 				break;
 				
@@ -179,9 +192,9 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 				ListView view = getListView();
 
 				if (null != selectedItems) {
-					for (Pair<Integer, TodoItem> item: selectedItems) {
-						System.out.println(String.format("Moving item %s (%d)", item.second.getText(), item.first));
-						mItem.moveItemToGroup(item.second, addToGroup);
+					for (TodoItem item: selectedItems) {
+						System.out.println(String.format("Moving item %s", item.getText()));
+						mItem.moveItemToGroup(item, addToGroup);
 					}
 					
 					selectedItems = null;
@@ -266,17 +279,15 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 		}
 		
 		if (null == selectedItems) {
-			 selectedItems = new ArrayList<Pair<Integer, TodoItem>>();
+			 selectedItems = new ArrayList<TodoItem>();
 		}
 		
-		Pair<Integer, TodoItem> pair = new Pair<Integer, TodoItem>(position, item);
-		
 		if (checked) {
-			if (!selectedItems.contains(pair)) {
-				selectedItems.add(pair);
+			if (!selectedItems.contains(item)) {
+				selectedItems.add(item);
 			}
 		} else {
-			selectedItems.remove(pair);
+			selectedItems.remove(item);
 		}
 	}
 }

@@ -4,7 +4,7 @@
           android:icon="@drawable/ic_action_discard"
           android:title="@string/delete_todoitem"
           android:showAsAction="ifRoom" />
-    
+
     <item android:id="@+id/add_to"
           android:icon="@drawable/ic_action_collection"
           android:title="@string/move_to"
@@ -12,4 +12,9 @@
           <menu android:id="@+id/move_to_item_menu" android:title="@string/move_to">
           </menu>
     </item>
+
+    <item android:id="@+id/email_todoitems"
+          android:icon="@drawable/ic_action_email"
+          android:title="@string/email_todoitems"
+          android:showAsAction="ifRoom" />
 </menu>
