@@ -3,6 +3,8 @@ package com.michaelblouin.todo;
 import java.io.Serializable;
 
 public class TodoItem implements Comparable<TodoItem>, Serializable {
+	public static final int NEXT_ID = 0;
+	
 	/**
 	 * Random variable UID for Serializable.
 	 */
@@ -14,7 +16,7 @@ public class TodoItem implements Comparable<TodoItem>, Serializable {
 	private Boolean checked = null;
 	
 	public TodoItem(String text) {
-		setId(0);
+		setId(NEXT_ID);
 		setText(text);
 		setChecked(itemsCheckedByDefault);
 	}
@@ -30,7 +32,7 @@ public class TodoItem implements Comparable<TodoItem>, Serializable {
 	}
 	
 	private void setId(Integer id) {
-		if (0 == id) {
+		if (NEXT_ID == id) {
 			id = nextId;
 		}
 		
