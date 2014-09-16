@@ -127,7 +127,7 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
 					@Override
 					public void onComplete(Boolean accepted, String value) {
 						if (accepted) {
-							selectedTodoGroup.addItemToGroup(new TodoItem(0, value, false));
+							selectedTodoGroup.addItemToGroup(new TodoItem(value));
 							newItemPrompt = null;
 							
 							TodoItemListFragment todoList = (TodoItemListFragment) getFragmentManager().findFragmentByTag(TodoItemListFragmentTag);

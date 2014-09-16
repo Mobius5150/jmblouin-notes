@@ -7,9 +7,17 @@ public class TodoItem implements Comparable<TodoItem>, Serializable {
 	 * Random variable UID for Serializable.
 	 */
 	private static final long serialVersionUID = 1019873874098928L;
+	private static final Boolean itemsCheckedByDefault = false;
+	private static Integer nextId = 1;
 	private Integer id = null;
 	private String text = null;
 	private Boolean checked = null;
+	
+	public TodoItem(String text) {
+		setId(0);
+		setText(text);
+		setChecked(itemsCheckedByDefault);
+	}
 	
 	public TodoItem(Integer id, String text, Boolean checked) {
 		setId(id);
@@ -22,7 +30,15 @@ public class TodoItem implements Comparable<TodoItem>, Serializable {
 	}
 	
 	private void setId(Integer id) {
+		if (0 == id) {
+			id = nextId;
+		}
+		
 		this.id = id;
+		
+		if (nextId <= id) {
+			nextId = id + 1;
+		}
 	}
 	
 	public String getText() {
