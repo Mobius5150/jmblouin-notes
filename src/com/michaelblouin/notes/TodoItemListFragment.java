@@ -13,6 +13,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView.MultiChoiceModeListener;
+import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.michaelblouin.todo.TodoGroup;
@@ -139,10 +141,12 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
         mActivatedPosition = position;
     }
     
+    /**
+     * This method is called when the user clicks on a button in one of the menus.
+     * Typically, the user has selected a set of todo items, and wants to apply an action to them. 
+     */
 	@Override
 	public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-		// This method is called when the user clicks on a button in one of the menus.
-		// Typically, the user has selected a set of todo items, and wants to apply an action to them. 
 		switch (menuItem.getItemId()) {
 			case R.id.add_to:
 				System.out.println("Add item to clicked");
@@ -208,6 +212,21 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 		}
 		
 		return true;
+	}
+	
+	public void notifyDataSetChanged() {
+		ListView listView = getListView();
+		
+		if (null == listView) {
+			throw new IllegalStateException("No list view found in Todo Item List Fragment.");
+		}
+		
+		listView.invalidate();
+		ListAdapter adapter = listView.getAdapter();
+		
+		if (adapter instanceof BaseAdapter) {
+			((BaseAdapter)adapter).notifyDataSetChanged();
+		}
 	}
 	
 	private void refreshListView(ListView view, ActionMode mode) {

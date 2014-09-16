@@ -15,5 +15,7 @@
     <string name="email_todogroups">Email All Todo Lists</string>
     <string name="email_todogroup">Email Todo List</string>
     <string name="email_todoitems">Email Selected Todo Items</string>
+    <string name="cancel_action">Cancel</string>
+    <string name="confirm_empty_todo_item_prompt">Are you sure you would like to create a blank todo item?</string>
 
 </resources>

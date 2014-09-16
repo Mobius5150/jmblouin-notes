@@ -115,11 +115,28 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
     	}
     }
     
+    NewTodoItemPrompt newItemPrompt;
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     		case R.id.new_todoitem:
     			System.out.println("New todoitem pressed");
+    			newItemPrompt = new NewTodoItemPrompt(this);
+    			
+    			newItemPrompt.setOnCompletionListener(new NewTodoItemPrompt.TodoItemPromptCompletionListener() {
+					@Override
+					public void onComplete(Boolean accepted, String value) {
+						if (accepted) {
+							selectedTodoGroup.addItemToGroup(new TodoItem(0, value, false));
+							newItemPrompt = null;
+							
+							TodoItemListFragment todoList = (TodoItemListFragment) getFragmentManager().findFragmentByTag(TodoItemListFragmentTag);
+							todoList.notifyDataSetChanged();
+						}
+					}
+    			});
+    			
+    			newItemPrompt.show();
     			break;
     			
     		case R.id.add_to:
