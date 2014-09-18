@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.michaelblouin.todo.TodoGroup;
+import com.michaelblouin.todo.TodoGroupProvider;
 
 /**
  * A list fragment representing a list of Todo Items. This fragment

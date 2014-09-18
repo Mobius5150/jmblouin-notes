@@ -1,7 +1,6 @@
-package com.michaelblouin.notes;
+package com.michaelblouin.todo;
 
 import java.util.Map;
-import com.michaelblouin.todo.TodoGroup;
 
 public interface TodoGroupProvider {
 	public Map<String, TodoGroup> getTodoGroups();

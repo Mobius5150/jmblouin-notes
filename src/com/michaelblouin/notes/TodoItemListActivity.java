@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.CheckBox;
 
 import com.michaelblouin.todo.TodoGroup;
+import com.michaelblouin.todo.TodoGroupProvider;
 import com.michaelblouin.todo.TodoItem;
 import com.michaelblouin.todo.TodoItemMailer;
 

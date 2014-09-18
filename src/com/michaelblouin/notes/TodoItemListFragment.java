@@ -18,6 +18,7 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.michaelblouin.todo.TodoGroup;
+import com.michaelblouin.todo.TodoGroupProvider;
 import com.michaelblouin.todo.TodoItem;
 import com.michaelblouin.todo.TodoItemMailer;
 
