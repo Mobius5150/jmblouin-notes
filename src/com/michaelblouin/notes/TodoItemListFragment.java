@@ -2,7 +2,6 @@ package com.michaelblouin.notes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import android.app.Activity;
 import android.app.ListFragment;
@@ -50,7 +49,7 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
      * The dummy content this fragment is presenting.
      */
     private TodoGroup mItem;
-    private Map<String, TodoGroup> mItems;
+    private List<TodoGroup> mItems;
     
     /**
      * The selected items in the list
@@ -70,13 +69,15 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
         Bundle arguments = getArguments();
         
         if (arguments.containsKey(ARG_ITEM_ID)) {
-        	mItems = ((TodoGroupProvider) getActivity()).getTodoGroups();
+        	TodoGroupProvider provider = (TodoGroupProvider) getActivity();
         	
-        	if (!mItems.containsKey(arguments.getString(ARG_ITEM_ID))) {
+        	mItems = provider.getTodoGroups();
+        	mItem = provider.getTodoGroupByName(arguments.getString(ARG_ITEM_ID));
+        	
+        	if (null == mItem) {
         		throw new IllegalStateException("Error: The given item id was not found in the collection");
         	}
         	
-        	mItem = mItems.get(arguments.getString(ARG_ITEM_ID));
         }
         
         if (null != mItem) {
@@ -188,11 +189,11 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 				String addToGroupName = menuItem.getTitle().toString();
 				System.out.println(String.format("Move to menu item clicked: %s", addToGroupName));
 				
-				if (!mItems.containsKey(addToGroupName)) {
+				TodoGroup addToGroup = ((TodoGroupProvider) getActivity()).getTodoGroupByName(addToGroupName);
+				
+				if (null == addToGroup) {
 					throw new IllegalStateException("Selected group was not found in the group list");
 				}
-				
-				TodoGroup addToGroup = mItems.get(addToGroupName);
 
 				ListView view = getListView();
 
@@ -276,7 +277,7 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 		Menu moveToMenu = addToMenu.getSubMenu();
 
 		int i = 0;
-		for (TodoGroup group: mItems.values()) {
+		for (TodoGroup group: mItems) {
 			if (mItem.getGroupName() == group.getGroupName()) {
 				continue;
 			}

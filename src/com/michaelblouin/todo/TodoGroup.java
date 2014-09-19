@@ -1,20 +1,40 @@
 package com.michaelblouin.todo;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TodoGroup implements Serializable {
+import com.michaelblouin.data.ISerializableData;
+
+public class TodoGroup implements ISerializableData {
 	/**
 	 * Random variable UID for Serializable.
 	 */
 	private static final long serialVersionUID = 8153760974926491L;
+	private static Integer nextId = 1;
 	List<TodoItem> items = new ArrayList<TodoItem>();
 	String groupName = null;
+	Integer id;
 	
-	public TodoGroup(String groupName, List<TodoItem> items) {
-		this.setGroupName(groupName);
-		this.setItems(items);
+	public TodoGroup(Integer id, String groupName, List<TodoItem> items) {
+		setId(id);
+		setGroupName(groupName);
+		setItems(items);
+	}
+	
+	public Integer getId() {
+		return id;
+	}
+	
+	private void setId(Integer id) {
+		if (0 == id) {
+			id = nextId;
+		}
+		
+		this.id = id;
+		
+		if (nextId <= id) {
+			nextId = id + 1;
+		}
 	}
 	
 	public String getGroupName() {
@@ -78,5 +98,10 @@ public class TodoGroup implements Serializable {
 		}
 		
 		return summary;
+	}
+	
+	@Override
+	public String getIdentifierString() {
+		return "TodoGroup" + getId().toString();
 	}
 }

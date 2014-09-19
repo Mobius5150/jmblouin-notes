@@ -1,19 +1,26 @@
 package com.michaelblouin.notes;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 
+import com.michaelblouin.data.IDataTask;
+import com.michaelblouin.data.IDataTaskCompletionHandler;
+import com.michaelblouin.data.ISerializableData;
+import com.michaelblouin.data.LoadDataTask;
+import com.michaelblouin.data.SaveDataTask;
 import com.michaelblouin.todo.TodoGroup;
 import com.michaelblouin.todo.TodoGroupProvider;
 import com.michaelblouin.todo.TodoItem;
@@ -37,30 +44,16 @@ import com.michaelblouin.todo.TodoItemMailer;
  */
 
 // TODO: Remove the Supress Warnings
-@SuppressWarnings("serial")
-public class TodoItemListActivity extends Activity implements TodoGroupListFragment.Callbacks, TodoGroupProvider, FragmentManager.OnBackStackChangedListener {
-	private final static Map<String, TodoGroup> todoGroups;
-	static
-    {
-		todoGroups = new HashMap<String, TodoGroup>();
-		todoGroups.put("Todo Items", new TodoGroup("Todo Items", new ArrayList<TodoItem>()));
-		todoGroups.put("Archive", new TodoGroup("Archive", new ArrayList<TodoItem>()));
-		
-		todoGroups.get("Todo Items").getItems().addAll(new ArrayList<TodoItem>() {{
-			add(new TodoItem(1, "Hello World", false));
-			add(new TodoItem(2, "Get milk", false));
-			add(new TodoItem(3, "Get eggs", true));
-		}});
-		
-		todoGroups.get("Archive").getItems().addAll(new ArrayList<TodoItem>() {{
-			add(new TodoItem(4, "Hi World", false));
-		}});
-    }
+@SuppressLint("UseSparseArrays")
+public class TodoItemListActivity extends Activity implements TodoGroupListFragment.Callbacks, TodoGroupProvider, FragmentManager.OnBackStackChangedListener, IDataTaskCompletionHandler {
+	private static List<TodoGroup> todoGroups;
 	
 	private static final String TodoGroupListFragmentTag = "TodoGroupListFragment";
 	private static final String TodoItemListFragmentTag = "TodoItemListFragment";
 	private String activeFragmentTag;
 	private TodoGroup selectedTodoGroup;
+	private LoadDataTask loadDataTask;
+	private SaveDataTask saveDataTask;
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -78,9 +71,19 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
 	    return true;
 	}
 	
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        // Load Todo Items
+        todoGroups = new ArrayList<TodoGroup>();
+        loadDataTask = new LoadDataTask(getApplication());
+        loadDataTask.setDataTaskCompletionHandler(this);
+        loadDataTask.execute(
+    		new Pair<String, String>("TodoGroup", "1"), 
+    		new Pair<String, String>("TodoGroup", "2"));
+        
         setContentView(R.layout.activity_todoitem_list);
         activeFragmentTag = TodoGroupListFragmentTag;
         
@@ -97,6 +100,16 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
         checkViewStateConsistency();
     }
     
+    @Override
+    protected void onPause() {
+    	super.onPause();
+    	
+    	System.out.println("App paused");
+    	saveDataTask = new SaveDataTask(getApplication());
+    	saveDataTask.setDataTaskCompletionHandler(this);
+    	saveDataTask.execute(todoGroups.toArray(new TodoGroup[todoGroups.size()]));
+    }
+
     private void checkViewStateConsistency() {
     	FragmentManager fragmentManager = getFragmentManager();
     	
@@ -165,7 +178,7 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
 
 				mailer = new TodoItemMailer(this);
 				
-				for (TodoGroup group: todoGroups.values()) {
+				for (TodoGroup group: todoGroups) {
 					mailer.addTodoGroup(group);
 				}
 				
@@ -202,11 +215,11 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
      */
     @Override
     public void onItemSelected(String id) {
-    	if (!todoGroups.containsKey(id)) {
+    	selectedTodoGroup = getTodoGroupByName(id);
+    	
+    	if (null == selectedTodoGroup) {
     		throw new IllegalStateException("The given TodoGroup was not found");
     	}
-
-    	selectedTodoGroup = todoGroups.get(id);
     	
     	Bundle arguments = new Bundle();
         arguments.putString(TodoItemListFragment.ARG_ITEM_ID, id);
@@ -224,7 +237,7 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
     }
 
 	@Override
-	public Map<String, TodoGroup> getTodoGroups() {
+	public List<TodoGroup> getTodoGroups() {
 		return todoGroups;
 	}
 
@@ -250,5 +263,65 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
     	}
     	
     	invalidateOptionsMenu();
+	}
+
+	
+	@Override
+	public void taskCompleted(IDataTask task) {
+		if (null == task) {
+			return;
+		}
+		
+		if (task instanceof LoadDataTask) {
+			System.out.println("Load Task completed");
+			// Load Todo Items
+	        @SuppressWarnings("unchecked") // This is generated by a cast to a generic type. Java sucks.
+			List<ISerializableData> result = (List<ISerializableData>) task.getResult();
+	        
+	        if (null != result) {
+	        	System.out.println("Result wasn't null");
+		        for (Serializable serializedGroup: result) {
+		        	if (null == serializedGroup || !(serializedGroup instanceof TodoGroup)) {
+		        		continue;
+		        	}
+		        	
+		        	todoGroups.add((TodoGroup) serializedGroup);
+		        }
+	        } else {
+	        	System.out.println("Result was null");
+	        	todoGroups.add(new TodoGroup(1, "Archive", new ArrayList<TodoItem>()));
+	        	todoGroups.add(new TodoGroup(2, "Todo Items", new ArrayList<TodoItem>()));
+	        }
+	        
+	        TodoGroupListFragment todoList = (TodoGroupListFragment) getFragmentManager().findFragmentByTag(TodoGroupListFragmentTag);
+			todoList.notifyDataSetChanged();
+			
+			loadDataTask = null;
+		} else if (task instanceof SaveDataTask) {
+			System.out.println("Save data task finished");
+			saveDataTask = null;
+		}
+	}
+	
+	@Override
+	public TodoGroup getTodoGroup(Integer id) {
+		for (TodoGroup group: todoGroups) {
+			if (group.getId() == id) {
+				return group;
+			}
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public TodoGroup getTodoGroupByName(String name) {
+		for (TodoGroup group: todoGroups) {
+			if (group.getGroupName().equals(name)) {
+				return group;
+			}
+		}
+		
+		return null;
 	}
 }

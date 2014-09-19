@@ -1,5 +1,7 @@
 package com.michaelblouin.notes;
 
+import java.util.List;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +13,7 @@ import com.michaelblouin.todo.TodoGroup;
 public class TodoGroupListAdapter<T extends TodoGroup> extends ArrayAdapter<T> {
 	final static int resource = R.layout.todo_group_list_item;
 
-	public TodoGroupListAdapter(Context context, T[] objects) {
+	public TodoGroupListAdapter(Context context, List<T> objects) {
 		super(context, resource, objects);
 	}
 

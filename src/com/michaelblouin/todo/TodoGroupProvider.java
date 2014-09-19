@@ -1,7 +1,9 @@
 package com.michaelblouin.todo;
 
-import java.util.Map;
+import java.util.List;
 
 public interface TodoGroupProvider {
-	public Map<String, TodoGroup> getTodoGroups();
+	public List<TodoGroup> getTodoGroups();
+	public TodoGroup getTodoGroup(Integer id);
+	public TodoGroup getTodoGroupByName(String name);
 }

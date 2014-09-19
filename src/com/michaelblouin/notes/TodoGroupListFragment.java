@@ -1,12 +1,13 @@
 package com.michaelblouin.notes;
 
-import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.michaelblouin.todo.TodoGroup;
@@ -22,7 +23,7 @@ import com.michaelblouin.todo.TodoGroupProvider;
  * interface.
  */
 public class TodoGroupListFragment extends ListFragment {
-	private Map<String, TodoGroup> todoGroups = null;
+	private List<TodoGroup> todoGroups = null;
 	
 	/**
      * The serialization (saved instance state) Bundle key representing the
@@ -74,11 +75,10 @@ public class TodoGroupListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        Collection<TodoGroup> groups = todoGroups.values();
         setListAdapter(
     		new TodoGroupListAdapter<TodoGroup>(
                 getActivity(),
-                groups.toArray(new TodoGroup[groups.size()])));
+                todoGroups));
     }
 
     @Override
@@ -123,7 +123,7 @@ public class TodoGroupListFragment extends ListFragment {
 
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(((TodoGroup)todoGroups.values().toArray()[position]).getGroupName());
+        mCallbacks.onItemSelected(((TodoGroup)todoGroups.toArray()[position]).getGroupName());
     }
 
     @Override
@@ -156,4 +156,19 @@ public class TodoGroupListFragment extends ListFragment {
 
         mActivatedPosition = position;
     }
+    
+    public void notifyDataSetChanged() {
+		ListView listView = getListView();
+		
+		if (null == listView) {
+			throw new IllegalStateException("No list view found in Todo Item List Fragment.");
+		}
+		
+		listView.invalidate();
+		ListAdapter adapter = listView.getAdapter();
+		
+		if (adapter instanceof BaseAdapter) {
+			((BaseAdapter)adapter).notifyDataSetChanged();
+		}
+	}
 }

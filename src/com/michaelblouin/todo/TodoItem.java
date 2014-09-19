@@ -1,8 +1,8 @@
 package com.michaelblouin.todo;
 
-import java.io.Serializable;
+import com.michaelblouin.data.ISerializableData;
 
-public class TodoItem implements Comparable<TodoItem>, Serializable {
+public class TodoItem implements Comparable<TodoItem>, ISerializableData {
 	public static final int NEXT_ID = 0;
 	
 	/**
@@ -67,5 +67,10 @@ public class TodoItem implements Comparable<TodoItem>, Serializable {
 	@Override
 	public String toString() {
 		return String.format("[%s] %s", checked ? "X" : "_", getText());
+	}
+
+	@Override
+	public String getIdentifierString() {
+		return "TodoItem" + getId().toString();
 	}
 }
