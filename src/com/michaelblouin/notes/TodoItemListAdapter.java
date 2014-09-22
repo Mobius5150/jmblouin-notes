@@ -31,7 +31,6 @@ public class TodoItemListAdapter<T extends TodoItem> extends ArrayAdapter<T> {
 		CheckBox checkbox = (CheckBox) view.findViewById(R.id.todoCheckBox);
 		if (null != checkbox) {
 			checkbox.setChecked(item.isChecked());
-			checkbox.setId(item.getId());
 			checkbox.setTag(item);
 		}
 		
