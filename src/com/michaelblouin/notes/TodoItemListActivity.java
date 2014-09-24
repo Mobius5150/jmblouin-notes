@@ -1,3 +1,19 @@
+/*
+Copyright 2014 Michael Blouin
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+	http://www.apache.org/licenses/LICENSE-2.0
+	
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package com.michaelblouin.notes;
 
 import java.util.ArrayList;
@@ -43,6 +59,10 @@ public class TodoItemListActivity extends Activity {
 	private TodoGroupListFragment todoGroupListFragment;
 	
 	private NotesDataManager dataManager;
+	
+	/**
+	 * Handles the completion of a data save/load task. Triggers updating of the list activity when data is initially loaded.
+	 */
 	private class DataTaskCompletionHandler implements IDataTaskCompletionHandler {
 		@Override
 		public void taskCompleted(IDataTask task) {
@@ -61,6 +81,10 @@ public class TodoItemListActivity extends Activity {
 	}
 	
 	private NewTodoItemPrompt.TodoItemPromptCompletionListener newTodoItemCompletionListener;
+	
+	/**
+	 * Handles the completion of the new todo item view. Creates the new todo item.
+	 */
 	private class NewTodoItemCompletionListener extends NewTodoItemPrompt.TodoItemPromptCompletionListener {
 		@Override
 		public void onComplete(Boolean accepted, String value) {
@@ -74,6 +98,9 @@ public class TodoItemListActivity extends Activity {
 		}
 	}
 
+	/**
+	 * Handles any changes to the back stack and ensures that the layout of the activity matches the correct layout for the active fragment.
+	 */
 	private class TodoGroupActivityBackStackChangeListener implements FragmentManager.OnBackStackChangedListener {
 		@Override
 		public void onBackStackChanged() {
@@ -100,6 +127,9 @@ public class TodoItemListActivity extends Activity {
 		}
 	}
 	
+	/**
+	 * Handles the selection of a todo group in the todo group fragment. Launches the next fragment for viewing the group.
+	 */
 	private class TodoGroupListFragmentCallbackHandler implements TodoGroupListFragment.Callback {
 		/**
 	     * Callback method from {@link TodoGroupListFragment.Callbacks}
@@ -129,6 +159,9 @@ public class TodoItemListActivity extends Activity {
 	    }
 	}
 	
+	/**
+	 * Called when the options menu is created. This method makes sure that the visible groups match the current view. 
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    MenuInflater inflater = getMenuInflater();
@@ -145,6 +178,9 @@ public class TodoItemListActivity extends Activity {
 	    return true;
 	}
 	
+	/**
+	 * Initializes the view and instantiates the default fragment.
+	 */
 	@SuppressWarnings("serial")
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,8 +194,9 @@ public class TodoItemListActivity extends Activity {
         }});
         
         setContentView(R.layout.activity_todoitem_list);
-        activeFragmentTag = TodoGroupListFragmentTag;
         
+        // Setup the default fragment
+        activeFragmentTag = TodoGroupListFragmentTag;
         todoGroupListFragment = new TodoGroupListFragment();
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager
@@ -175,12 +212,18 @@ public class TodoItemListActivity extends Activity {
         checkViewStateConsistency();
     }
     
+	/**
+	 * Called when the activity is paused. Triggers the saving of user data.
+	 */
     @Override
     protected void onPause() {
     	super.onPause();
     	dataManager.beginSaveTodoGroups();
     }
 
+    /**
+     * Ensures that we never have two fragments open at a given time.
+     */
     private void checkViewStateConsistency() {
     	FragmentManager fragmentManager = getFragmentManager();
     	
@@ -200,6 +243,9 @@ public class TodoItemListActivity extends Activity {
     	}
     }
 
+    /**
+     * Called when a menu item is pressed. Begins most of the menu actions.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
@@ -258,6 +304,10 @@ public class TodoItemListActivity extends Activity {
     	return true;
     }
     
+    /**
+     * Called when a checkbox in one of the lists is clicked. Sets the checked status of the checkbox.
+     * @param view
+     */
     public void onCheckboxClicked(View view) {
 		CheckBox checkbox = (CheckBox) view;
 		Object checkboxTag = checkbox.getTag();
