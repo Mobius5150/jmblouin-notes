@@ -87,16 +87,15 @@ public class TodoGroupListFragment extends ListFragment {
         super.onAttach(activity);
 
         // Activities containing this fragment must implement its callbacks.
-        if (!(activity instanceof Callback)) {
-            throw new IllegalStateException("Activity must implement fragment's callbacks.");
-        }
-        
         if (!(activity instanceof TodoGroupProvider)) {
             throw new IllegalStateException("Activity must implement TodoGroupProvider");
         }
-
-        mCallbacks = (Callback) activity;
+        
         todoGroups = ((TodoGroupProvider) activity).getTodoGroups();
+    }
+    
+    public void setItemClickedListener(Callback callback) {
+    	this.mCallbacks = callback;
     }
 
     @Override
