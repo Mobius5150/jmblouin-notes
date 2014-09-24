@@ -115,6 +115,7 @@ public class TodoItemListActivity extends Activity {
 	    		selectedTodoGroup = null;
 	    		invalidateOptionsMenu();
 	    	} else if (null != fragmentManager.findFragmentByTag(TodoItemListFragmentTag)) {
+	    		// Change the name of the activity for the current list fragment to the active TodoGroup.
 	    		if (selectedTodoGroup != null) {
 	    			getActionBar().setTitle(selectedTodoGroup.getGroupName());
 	    		}
@@ -143,10 +144,11 @@ public class TodoItemListActivity extends Activity {
 	    		throw new IllegalStateException("The given TodoGroup was not found");
 	    	}
 	    	
+	    	// Get the selected group, and pass it to the TodoItemListFragment in a bundle
 	    	Bundle arguments = new Bundle();
 	        arguments.putString(TodoItemListFragment.ARG_ITEM_ID, group.getGroupName());
 	        
-	        TodoItemListFragment fragment = new TodoItemListFragment();
+	        TodoItemListFragment fragment = new TodoItemListFragment(dataManager);
 	        fragment.setArguments(arguments);
 	        
 	        getFragmentManager()
@@ -167,10 +169,12 @@ public class TodoItemListActivity extends Activity {
 	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.menu_todogroup_options, menu);
 	    
+	    // Only show the TodoItem Menu Group for the TodoItemListFragment
 	    menu.setGroupVisible(
 			R.id.todoitem_menu_group, 
 			TodoItemListFragmentTag == activeFragmentTag);
 	    
+	    // Only show the TodoGroup Menu Group for the TodoGroupListFragment
 	    menu.setGroupVisible(
 			R.id.todogroup_menu_group, 
 			TodoGroupListFragmentTag == activeFragmentTag);
@@ -197,7 +201,7 @@ public class TodoItemListActivity extends Activity {
         
         // Setup the default fragment
         activeFragmentTag = TodoGroupListFragmentTag;
-        todoGroupListFragment = new TodoGroupListFragment();
+        todoGroupListFragment = new TodoGroupListFragment(dataManager);
         FragmentManager fragmentManager = getFragmentManager();
         fragmentManager
 	    	.beginTransaction()
@@ -250,7 +254,7 @@ public class TodoItemListActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
     	switch (item.getItemId()) {
     		case R.id.new_todoitem:
-    			System.out.println("New todoitem pressed");
+    			// Create a new item prompt to get the name of the new item from the user.
     			newItemPrompt = new NewTodoItemPrompt(this);
     			
     			if (null == newTodoItemCompletionListener) {
@@ -263,8 +267,7 @@ public class TodoItemListActivity extends Activity {
     			break;
     			
     		case R.id.email_todogroup:
-				System.out.println("Email todogroup button pressed");
-				
+				// Email the selected todogroup using a TodoItemMailer.
 				if (null == selectedTodoGroup) {
 					throw new IllegalStateException("Cannot email todo items: No todo group selected");
 				}
@@ -275,8 +278,7 @@ public class TodoItemListActivity extends Activity {
 				break;
 				
     		case R.id.email_todogroups:
-				System.out.println("Email todogroups button pressed");
-
+    			// Email the selected todogroups using a TodoItemMailer.
 				List<TodoGroup> todoGroups = dataManager.getTodoGroups();
 				
 				if (null == todoGroups) {
@@ -293,6 +295,7 @@ public class TodoItemListActivity extends Activity {
 				break;
 				
     		default:
+    			// Menu button pressed. Pop back stack.
     			FragmentManager fragmentManager = getFragmentManager();
     	    	
     	    	if (fragmentManager.getBackStackEntryCount() > 0) {

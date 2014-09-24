@@ -18,7 +18,6 @@ package com.michaelblouin.notes;
 
 import java.util.List;
 
-import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.View;
@@ -57,6 +56,11 @@ public class TodoGroupListFragment extends ListFragment {
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
+    
+    /**
+     * The todo group provider that provides todo groups to the fragment.
+     */
+    private TodoGroupProvider todoGroupProvider;
 
     /**
      * A callback interface that all activities containing this fragment must
@@ -74,12 +78,15 @@ public class TodoGroupListFragment extends ListFragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public TodoGroupListFragment() {
+    public TodoGroupListFragment(TodoGroupProvider todoGroupProvider) {
+    	this.todoGroupProvider = todoGroupProvider;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        todoGroups = todoGroupProvider.getTodoGroups();
         
         setListAdapter(
     		new TodoGroupListAdapter<TodoGroup>(
@@ -96,18 +103,6 @@ public class TodoGroupListFragment extends ListFragment {
                 && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-
-        // Activities containing this fragment must implement its callbacks.
-        if (!(activity instanceof TodoGroupProvider)) {
-            throw new IllegalStateException("Activity must implement TodoGroupProvider");
-        }
-        
-        todoGroups = ((TodoGroupProvider) activity).getTodoGroups();
     }
     
     public void setItemClickedListener(Callback callback) {

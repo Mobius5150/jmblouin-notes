@@ -19,7 +19,6 @@ package com.michaelblouin.notes;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.Activity;
 import android.app.ListFragment;
 import android.os.Bundle;
 import android.view.ActionMode;
@@ -66,6 +65,7 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
      */
     private TodoGroup mItem;
     private List<TodoGroup> mItems;
+    private TodoGroupProvider todoGroupProvider;
     
     /**
      * The selected items in the list
@@ -76,7 +76,8 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public TodoItemListFragment() {
+    public TodoItemListFragment(TodoGroupProvider todoGroupProvider) {
+    	this.todoGroupProvider = todoGroupProvider;
     }
 
     @Override
@@ -85,10 +86,8 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
         Bundle arguments = getArguments();
         
         if (arguments.containsKey(ARG_ITEM_ID)) {
-        	TodoGroupProvider provider = (TodoGroupProvider) getActivity();
-        	
-        	mItems = provider.getTodoGroups();
-        	mItem = provider.getTodoGroupByName(arguments.getString(ARG_ITEM_ID));
+        	mItems = todoGroupProvider.getTodoGroups();
+        	mItem = todoGroupProvider.getTodoGroupByName(arguments.getString(ARG_ITEM_ID));
         	
         	if (null == mItem) {
         		throw new IllegalStateException("Error: The given item id was not found in the collection");
@@ -122,15 +121,6 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
         ListView listView = getListView();
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
         listView.setMultiChoiceModeListener(this);
-    }
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        
-        if (!(activity instanceof TodoGroupProvider)) {
-        	throw new IllegalStateException("Activity must implement TodoGroupProvider");
-        }
     }
 
     @Override
@@ -205,7 +195,7 @@ public class TodoItemListFragment extends ListFragment implements MultiChoiceMod
 				String addToGroupName = menuItem.getTitle().toString();
 				System.out.println(String.format("Move to menu item clicked: %s", addToGroupName));
 				
-				TodoGroup addToGroup = ((TodoGroupProvider) getActivity()).getTodoGroupByName(addToGroupName);
+				TodoGroup addToGroup = todoGroupProvider.getTodoGroupByName(addToGroupName);
 				
 				if (null == addToGroup) {
 					throw new IllegalStateException("Selected group was not found in the group list");
