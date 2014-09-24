@@ -38,7 +38,7 @@ import com.michaelblouin.todo.TodoItemMailer;
  * to listen for item selections.
  */
 
-public class TodoItemListActivity extends Activity implements TodoGroupListFragment.Callbacks, FragmentManager.OnBackStackChangedListener {
+public class TodoItemListActivity extends Activity implements TodoGroupListFragment.Callback, FragmentManager.OnBackStackChangedListener {
 	private static final String TodoGroupListFragmentTag = "TodoGroupListFragment";
 	private static final String TodoItemListFragmentTag = "TodoItemListFragment";
 	private String activeFragmentTag;
@@ -222,15 +222,15 @@ public class TodoItemListActivity extends Activity implements TodoGroupListFragm
      * indicating that the item with the given ID was selected.
      */
     @Override
-    public void onItemSelected(String id) {
-    	selectedTodoGroup = dataManager.getTodoGroupByName(id);
+    public void onItemSelected(TodoGroup group) {
+    	selectedTodoGroup = group;
     	
     	if (null == selectedTodoGroup) {
     		throw new IllegalStateException("The given TodoGroup was not found");
     	}
     	
     	Bundle arguments = new Bundle();
-        arguments.putString(TodoItemListFragment.ARG_ITEM_ID, id);
+        arguments.putString(TodoItemListFragment.ARG_ITEM_ID, group.getGroupName());
         
         TodoItemListFragment fragment = new TodoItemListFragment();
         fragment.setArguments(arguments);
