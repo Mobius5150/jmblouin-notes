@@ -33,5 +33,8 @@ While viewing a todo group, click the email button on the menu bar and select an
 #### Email One or More Todo Items
 While viewing a todo group, select an item by clicking on the whitespace around its name, this will begin a selection. Select any other items you would like to send and click the email button on the menu bar.
 
+## UML Diagrams
+If you would like to see UML diagrams of the applications' structure, please see the `jmblouin-notes-uml.png` file in the `doc` directory. Note that all of the `jmblouin-notes-uml.*` files are the same. For best results open the .png file.
+
 ## License
 This application is copyrighted to `Michael Blouin` in `2014`, and released under the APACHE 2.0 License. See `LICENSE.txt` for more information.
