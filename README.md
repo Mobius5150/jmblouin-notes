@@ -5,6 +5,21 @@ This is a simple todo list application for the CMPUT 301 class.
 This application uses the following third-party resources:
 - [Android Action Bar Icon Pack](https://developer.android.com/design/style/iconography.html) ([Creative Commons Attribution 2.5](http://creativecommons.org/licenses/by/2.5/))
 
+Additionally, much of the API use, and general design of the application was inspired from the [Android Developers](http://developer.android.com) site. These articles in particular were referenced alot:
+
+- [ListActivity Class](http://developer.android.com/reference/android/app/ListActivity.html)
+- [Adapter Class](http://developer.android.com/reference/android/widget/Adapter.html)
+- [Interacting with other Applications](http://developer.android.com/training/basics/intents/index.html)
+- [Adding the Action Bar](http://developer.android.com/training/basics/actionbar/index.html)
+- [Building a dynamic ui with fragments](http://developer.android.com/training/basics/fragments/index.html)
+- [Saving Files](http://developer.android.com/training/basics/data-storage/files.html)
+
+Note that no code blocks were directly taken from the Android Developer articles. Rather, the information in the articles was used to learn the use of the Android API, and common practices in structuring an application.
+
+Lastly, the assignment was discussed with the following students (by CCID), however no code or specific details were exchanged:
+- sajust
+- lamorie
+
 ## Usage
 
 ### Adding Items
