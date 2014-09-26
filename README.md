@@ -34,4 +34,4 @@ While viewing a todo group, click the email button on the menu bar and select an
 While viewing a todo group, select an item by clicking on the whitespace around its name, this will begin a selection. Select any other items you would like to send and click the email button on the menu bar.
 
 ## License
-This application is copyrighted to `Michael Blouin` in `2014`, and released under the APACHE 2.0 License.
+This application is copyrighted to `Michael Blouin` in `2014`, and released under the APACHE 2.0 License. See `LICENSE.txt` for more information.
