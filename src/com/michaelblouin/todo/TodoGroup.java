@@ -27,9 +27,9 @@ public class TodoGroup implements ISerializableData {
 	 */
 	private static final long serialVersionUID = 8153760974926491L;
 	private static Integer nextId = 1;
-	List<TodoItem> items = new ArrayList<TodoItem>();
-	String groupName = null;
-	Integer id;
+	private List<TodoItem> items = new ArrayList<TodoItem>();
+	private String groupName = null;
+	private Integer id;
 	
 	public TodoGroup(Integer id, String groupName, List<TodoItem> items) {
 		setId(id);
